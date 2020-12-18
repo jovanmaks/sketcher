@@ -8,5 +8,8 @@ Currently, working only under linux.
 
 ![alt text](https://i.imgur.com/7az58eb.png)
 
+![alt text](https://imgur.com/GsixMJY.png)
+
+
 
 The project is unstable, and possible crashes can occur. 
