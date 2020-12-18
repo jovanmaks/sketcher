@@ -6,7 +6,7 @@ with it.
 Use right click for interaction. 
 Currently, working only under linux.
 
-![alt text](https://imgur.com/7az58eb)
+![alt text](https://i.imgur.com/7az58eb.png)
 
 
 The project is unstable, and possible crashes can occur. 
