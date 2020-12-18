@@ -4,7 +4,7 @@ A small project for making quick sketches in a modular grid. The main idea is to
 with it.
 
 Use right click for interaction. 
-Currently, working only under linux.
+Working  under linux.
 
 https://www.youtube.com/watch?v=xBDrxzI7p4E
 
