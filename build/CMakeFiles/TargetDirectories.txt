@@ -1,0 +1,3 @@
+/home/demijan/Projects/sketcher/build/CMakeFiles/rebuild_cache.dir
+/home/demijan/Projects/sketcher/build/CMakeFiles/edit_cache.dir
+/home/demijan/Projects/sketcher/build/CMakeFiles/Sketcher.dir
