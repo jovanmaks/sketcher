@@ -31,29 +31,37 @@
 /* Math */
 #include "vendor/glm/glm.hpp"
 #include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/glm/gtx/intersect.hpp"
 
+
+/* Sketcher */
 grid::Buffer B;
 
 
 float ColorClick = 1.f;
 
-int brojacZid = 0;
-int brojacStub = 0;
-int brojacGreda = 0;
-int brojacEraser = 0;
-
 double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda;
-int tt = 0;
+int brojacRKlik,brojacLKlik, brojacZid, brojacStub, brojacGreda, brojacEraser;
 int trackerCount, trackerGredaCount, roolerCount;
-int element = 0;
-int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount;
+int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, id_Count;
 
+int scroolback_flag;
+int *sf = &scroolback_flag;
+int element = 0;
 bool lbutton_down;
+
+
+
+
+
+//////////////////////////////////////////////////////////////
+////////////////////// FUNKCIJE //////////////////////////////
+//////////////////////////////////////////////////////////////
 
 
 void cursorPositionCallback ( GLFWwindow *window, double xPos, double yPos)
 {
-    std::cout<< xPos << "   :   " << yPos << std::endl;
+    // std::cout<< xPos << "   :   " << yPos << std::endl;
 }
 
 
@@ -80,17 +88,18 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         // ColorClick = 1.0f;
+        brojacLKlik +=1;
     }
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
-
+        brojacRKlik+=1;
         if(element == 0)
         {
 
         brojacZid += 1;
         glfwGetCursorPos(window, &MouseXpos, &MouseYpos);
-
+    
         }else if(element == 1)
         {
 
@@ -110,7 +119,6 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
             lbutton_down = true;
         }
 
-
         // std::cout<<brojac<<std::endl;
         ColorClick = 1.0f;
     }
@@ -118,43 +126,8 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
     else if( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE )
     {
         lbutton_down = false;
-    }
+    }       
 
-
-
-
-   
-
-        
-
-}
-
-/* Mislim da se ne koristi nigdje ali neka ga za sada */
-void mouseButtonCallback2 ( GLFWwindow *window, int button, int action, int mods)
-{
-     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-    {
-        // ColorClick = 1.0f;
-   
-    }
-
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-    {
-        glfwGetCursorPos(window, &MouseXpos, &MouseYpos);
-        if(element == 0)
-        {
-
-        brojacZid += 1;
-        }else if(element == 1)
-        {
-
-        brojacStub += 1;
-        }
-
-        // std::cout<<brojac<<std::endl;
-        ColorClick = 1.0f;
-
-    }
 }
 
 /* Scroll comands */
@@ -163,15 +136,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     if (yoffset > 0)
     {
           
-     tt = 0;
+     *sf = 0;
 	// std::cout << tt << std::endl;
     }
 	else{
-    tt = 1;   
+    *sf = 1;   
 
 	// std::cout << tt << std::endl;
     }
-
     
 }
 
@@ -199,11 +171,140 @@ static void ShowExampleAppMainMenuBar()
     }
 }
 
+
+//////////////////////////////////////////////////////////////
+////////////////////// HASHING //////////////////////////////
+//////////////////////////////////////////////////////////////
+
+#define MAX_NAME 256
+#define TABLE_SIZE 25
+#define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
+
+typedef struct 
+{
+    char id [ MAX_NAME ];
+    // char material [ MAX_NAME ];
+
+    int POS;
+    // float  color;
+    //....add other stuff here
+} column;
+
+
+column* hash_table[TABLE_SIZE];
+
+
+unsigned int hash( char const *id)
+{
+    int lenght = strnlen (id, MAX_NAME);
+    unsigned int hash_value = 0;
+    for (int i=0; i<lenght; i++)
+    {
+        hash_value +=id[i];
+        hash_value = (hash_value * id[i]) % TABLE_SIZE;
+    }
+    return hash_value;
+}
+
+void init_hash_table() 
+{
+    for (int i=0; i<TABLE_SIZE; i++){
+        hash_table[i] = NULL; //postavio si sve pointere na nulu
+    }
+    //table is empty
+}
+
+
+void print_table() 
+{
+    std::cout<<"start"<<std::endl;
+    for (int i=0; i< TABLE_SIZE; i++) 
+    {
+      if (hash_table[i]==NULL)
+      {
+         std::cout<<i<<"-----"<<std::endl;
+
+      } else if (hash_table[i] == DELETED_NODE){
+          std::cout<<i<<"---<deleted>"<<std::endl;
+      } else {
+          std::cout<<i<<hash_table[i]->id<<std::endl;
+      }
+    }
+    std::cout<<"End"<<std::endl;
+
+} 
+
+bool hash_table_insert(column *c)
+{
+    if (c==NULL) return false;
+    int index = hash (c->id);
+    for (int i=0; i< TABLE_SIZE; i++)
+    {
+        
+        int put = (i+ index) % TABLE_SIZE;
+        if (hash_table[put] == NULL || hash_table[put] == DELETED_NODE)
+        {
+            hash_table[put] = c;
+            return true;
+        }
+    }
+
+    return true;
+}
+
+//find an element in the table by their name
+column *hash_table_lookup ( char const *id )
+{
+    int index = hash(id);
+    for (int i=0; i< TABLE_SIZE; i++)
+    {
+        int put = (index + i) % TABLE_SIZE;
+        if (hash_table[put] == NULL)
+        {
+            return NULL; //not here`
+        }
+        if(hash_table[put] == DELETED_NODE) return NULL;
+        if (hash_table[put]!=NULL && strncmp (hash_table[index] ->id, id, TABLE_SIZE)==0)
+        {
+            return hash_table[put];
+        }
+    }
+    return NULL;
+}
+
+
 /* Main function */
 int main (void)
 {
+    // init_hash_table();
+
+
+    // column CC = {"CC", 1, };
+    // column BB = {"BB", 2, };
+
+    // hash_table_insert(&CC);
+    // hash_table_insert(&BB);
+
+    // print_table();
+
+
+    // column *tmp = hash_table_lookup("BB");
+
+    // if(tmp == NULL){
+    // printf("Not found!\n");
+    // }else{
+    // printf("Found %s.\n",tmp->id);
+    // }
+
+    // tmp = hash_table_lookup("BB");
+    // if(tmp == NULL){
+    //     printf("Not found!\n");
+    // }else{
+    //     printf("Found %s.\n",tmp->id);
+    // }
+
+
     Atributes atr;
-    // grid::Buffer B;
     float width = atr.rows;
     float height = atr.colums;
 
@@ -317,6 +418,12 @@ int main (void)
     unsigned int* MemoryGreda = new unsigned int [400 + MemoryGredaCount];
     unsigned int* MemoryEraser = new unsigned int [100 + MemoryEraserCount];
 
+    //nece trebati
+    id_Count = width * height;
+
+    unsigned int grid_id;
+
+
     //=============== LAYOUT =========================
 
 
@@ -342,6 +449,12 @@ int main (void)
     /* Matrices   */
     glm::mat4 proj  = glm::ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     // glm::mat4 view  = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
+    // bool glm::intersectRayTriangle( orig, );
+
+    
+    // glm::intersectRayTriangle(ve3orig, vec3dir,vec3vert0,vec3vert1,vec3vert2,vec2baryPosition,distance)
+    
 
     //=============== SHADERS =========================
 
@@ -432,6 +545,16 @@ int main (void)
 
 
     static bool show_app_main_menu_bar = true;
+
+    //====================================================
+    //=============== HASHING ============================
+    //====================================================
+
+
+
+
+
+
     //====================================================
     //=============== WHILE LOOP =========================
     //====================================================
@@ -441,6 +564,8 @@ int main (void)
         GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         renderer.Clear();
         
+
+       
 
         ImGui_ImplGlfw_NewFrame();  
         ImGui_ImplOpenGL3_NewFrame();
@@ -472,10 +597,15 @@ int main (void)
             trackerGredaCount = 6;
             roolerCount = 2;
 
+
             memoryCount = brojacZid*6;
             memoryCount2 = brojacStub*6;
             MemoryGredaCount = brojacGreda*6;
             MemoryEraserCount = brojacEraser*6;
+
+            // B.id(mouseX, mouseY);
+
+            
 
          
          //================ ODABIR ELEMENTA ZA TRAKER ===============
@@ -585,7 +715,7 @@ int main (void)
             }
 
          //================ USLOV ZA VUCENJE MISA ===============
-            std::cout<<lbutton_down<<std::endl;
+            // std::cout<<lbutton_down<<std::endl;
 
 
          //================ PUNJENJE MEMORIJE - ide po prioritetu ===============
@@ -749,7 +879,30 @@ int main (void)
             brojacEraser = 0;
             }
 
-        /*     static int hide = 0;
+        ImGui::Separator();   
+           
+            double gx;
+            double gy;
+            glfwGetCursorPos(window, &gx, &gy);   
+            ImGui::Text("Mouse pos: (%g, %g)", gx, gy);
+            ImGui::Text("Scroolback flag: (%i) ", *sf);
+            ImGui::Text("Left click count : (%i) ",brojacLKlik );
+            ImGui::Text("right click count: (%i) ",brojacRKlik );
+
+
+        ImGui::Separator();   
+
+            ImGui::Text("ID: ");
+            ImGui::Text("Value: ");
+            ImGui::Text("Type: ");
+            ImGui::Text("Material: ");
+            ImGui::Text("POS: "); 
+
+
+        ImGui::Separator();
+        
+            /*    
+             static int hide = 0;
             if(ImGui::Button("hide"))
             hide++;
             if(hide & 1)

@@ -49,6 +49,8 @@ vendor/glm/glm.hpp
 /home/demijan/Projects/sketcher/src/vendor/glm/glm.hpp
 vendor/glm/gtc/matrix_transform.hpp
 /home/demijan/Projects/sketcher/src/vendor/glm/gtc/matrix_transform.hpp
+vendor/glm/gtx/intersect.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.hpp
 
 /home/demijan/Projects/sketcher/src/Atributes.h
 
@@ -923,6 +925,46 @@ matrix_transform.inl
 /home/demijan/Projects/sketcher/src/vendor/glm/trigonometric.hpp
 ../matrix.hpp
 /home/demijan/Projects/sketcher/src/vendor/glm/matrix.hpp
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.hpp
+../glm.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/glm.hpp
+closest_point.inl
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.inl
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.inl
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.hpp
+cfloat
+-
+limits
+-
+../glm.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/glm.hpp
+../geometric.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/geometric.hpp
+../gtx/closest_point.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.hpp
+../gtx/vector_query.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.hpp
+intersect.inl
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.inl
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.inl
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.hpp
+../glm.hpp
+/home/demijan/Projects/sketcher/src/vendor/glm/glm.hpp
+cfloat
+-
+limits
+-
+vector_query.inl
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.inl
+
+/home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.inl
+cassert
+-
 
 /home/demijan/Projects/sketcher/src/vendor/glm/integer.hpp
 detail/qualifier.hpp

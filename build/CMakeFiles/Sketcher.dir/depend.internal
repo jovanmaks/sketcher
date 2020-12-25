@@ -150,6 +150,12 @@ CMakeFiles/Sketcher.dir/Application.cpp.o
  /home/demijan/Projects/sketcher/src/vendor/glm/gtc/constants.inl
  /home/demijan/Projects/sketcher/src/vendor/glm/gtc/matrix_transform.hpp
  /home/demijan/Projects/sketcher/src/vendor/glm/gtc/matrix_transform.inl
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.hpp
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.inl
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.hpp
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.inl
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.hpp
+ /home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.inl
  /home/demijan/Projects/sketcher/src/vendor/glm/integer.hpp
  /home/demijan/Projects/sketcher/src/vendor/glm/mat2x2.hpp
  /home/demijan/Projects/sketcher/src/vendor/glm/mat2x3.hpp

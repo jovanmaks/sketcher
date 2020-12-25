@@ -35,6 +35,9 @@ namespace grid
         Buffer(/* args */);
         ~Buffer();
 
+        unsigned int id                   ( double mouseX,  double mouseY);
+
+
         float VertexBuffer_XY(float* bufferXY);
         float VertexBuffer_XYZ(float* bufferXYZ);
        

@@ -12,8 +12,8 @@ public:
     unsigned  int moduo;
 
 
-    int ScreenWidth = 900;
-    int ScreenHeight = 900;
+    int ScreenWidth = 1000;
+    int ScreenHeight = 1000;
 
     float GridValue = 0.5;/* VAZNO */
     float RGB1      = 0.6;/* VAZNO */
@@ -23,8 +23,8 @@ public:
 //============== GRID - CELL ==========================
 
     /* neka uvijek budu parni da bi mogao da postoji sekundarni grid */
-    unsigned int rows = 36;/* VAZNO */
-    unsigned int colums = 36;/* VAZNO */
+    unsigned int rows = 6;/* VAZNO */
+    unsigned int colums = 6;/* VAZNO */
 
 
 //============== GRID - VERTEX ========================= 

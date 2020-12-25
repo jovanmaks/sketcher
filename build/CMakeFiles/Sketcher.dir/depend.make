@@ -149,6 +149,12 @@ CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/v
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtc/constants.inl
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtc/matrix_transform.hpp
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtc/matrix_transform.inl
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.hpp
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/closest_point.inl
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.hpp
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/intersect.inl
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.hpp
+CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/gtx/vector_query.inl
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/integer.hpp
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/mat2x2.hpp
 CMakeFiles/Sketcher.dir/Application.cpp.o: /home/demijan/Projects/sketcher/src/vendor/glm/mat2x3.hpp

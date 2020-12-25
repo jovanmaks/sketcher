@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include "Atributes.h"
 #include <cmath>
+#include <iostream>
 
 namespace grid
 {
@@ -11,6 +12,8 @@ namespace grid
         BufferData::~BufferData()
         {            
         }
+
+    
 
         float BufferData::Value ( float* values )
         {
@@ -115,6 +118,34 @@ namespace grid
         Buffer::~Buffer()
         {            
         }        
+
+        unsigned int Buffer::id ( double mouseX,  double mouseY )
+        {
+
+             
+            double celijaX = ScreenWidth/rows;      
+            double celijaY = ScreenHeight/colums;
+
+            double  Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
+            double res1;
+            res1 = floor (Ix);
+
+            double  Iy = (ScreenHeight - mouseY)/celijaY;//treba da zaokruzis ovo na donju
+            double  res2;
+            res2 = floor (Iy);
+            //formula za racunanje ugaonog indeksa
+            unsigned int I0= res1 + res2*rows;//prvi indeks. Donji lijevi            
+
+            unsigned int grid_id;
+
+            grid_id  = I0;            
+            
+            std::cout<<"id: "<< grid_id <<std::endl;
+    
+            return grid_id;
+
+        }
+
 
 
         float Buffer::VertexBuffer_XY(float* bufferXY)
