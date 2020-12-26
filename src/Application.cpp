@@ -50,10 +50,10 @@ int SCREEN_HEIGHT = atr.ScreenHeight;
 
 float ColorClick = 1.f;
 
-double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda, msX, msY;
-int brojacRKlik,brojacLKlik, brojacZid, brojacStub, brojacGreda, brojacEraser;
+double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda, msX, msY, MouseXposDoor, MouseYposDoor;
+int brojacRKlik,brojacLKlik, brojacZid, brojacStub, brojacGreda, brojacEraser, brojacDoor;
 int trackerCount, trackerGredaCount, roolerCount;
-int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, id_Count;
+int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, MemoryDoorCount, id_Count;
 
 int scroolback_flag;
 int *sf = &scroolback_flag;
@@ -82,6 +82,15 @@ typedef struct
     // float  color;
     //....add other stuff here
 } field;
+
+
+
+typedef struct
+{
+    char name [MAX_NAME];
+    char obradaPoda [MAX_NAME];//ovdje bi trebao hechove da ubacujes
+    float area;
+}room;
 
 field* hash_id_table[TABLE_SIZE];
 
@@ -249,7 +258,12 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
             brojacEraser +=1;
             glfwGetCursorPos(window, &MouseXposGreda, &MouseYposGreda);
             // lbutton_down = true;
+        }else if (element == 4){
+            brojacDoor +=1;
+            glfwGetCursorPos(window, &MouseXposDoor, &MouseYposDoor);
+
         }
+        
 
         // std::cout<<brojac<<std::endl;
         ColorClick = 1.0f;
@@ -532,6 +546,8 @@ int main (void)
     unsigned int* MemoryGreda = new unsigned int [400 + MemoryGredaCount];
     unsigned int* MemoryEraser = new unsigned int [100 + MemoryEraserCount];
 
+    unsigned int* MemoryDoor = new unsigned int [100 + MemoryDoorCount];
+
     //nece trebati
     id_Count = width * height;
 
@@ -613,7 +629,13 @@ int main (void)
     /* Shader for Memory Eraser */
     Shader shaderEraser( "../res/shaders/Basic2.shader" );
     shaderEraser.Bind();
-    shaderEraser.SetUniform4f( "u_Color",0.2f, 0.4f, 0.6f, 0.7f );
+    shaderEraser.SetUniform4f( "u_Color",0.2f, 0.4f, 0.6f, 0.7f );//zelena
+
+    /* Shader for Memory Door */
+    Shader shaderDoor ( "../res/shaders/Basic2.shader"  );
+    shaderDoor.Bind();
+    shaderDoor.SetUniform4f( "u_Color",0.2f, 0.4f, 0.6f, 0.7f );//zelena
+
 
     //=============== UNBIND =========================
 
@@ -630,10 +652,12 @@ int main (void)
     shaderColumn.Unbind();
     shaderGreda.Unbind();
     shaderEraser.Unbind();
+    shaderDoor.Unbind();
 
     shaderTracker.Unbind();
     shaderTracker2.Unbind();
     shaderTrackerGreda.Unbind();
+    
 
     Renderer renderer;
 
@@ -654,6 +678,7 @@ int main (void)
 
     bool primarniGrid   = true;
     bool sekundarniGrid = false;
+    bool constructionAxis = false;
 
     bool stub = false;
 
@@ -717,6 +742,7 @@ int main (void)
             memoryCount2 = brojacStub*6;
             MemoryGredaCount = brojacGreda*6;
             MemoryEraserCount = brojacEraser*6;
+            MemoryDoorCount = brojacDoor*6;
 
             // B.id(mouseX, mouseY);
 
@@ -724,10 +750,12 @@ int main (void)
 
       
 
-         
+         //=========================================================
          //================ ODABIR ELEMENTA ZA TRAKER ===============
+         //=========================================================
+         
 
-            if( element == 0)
+            if( element == 0)//element
             {
             
             //Tracker
@@ -752,7 +780,7 @@ int main (void)
             // delete[] Rooler;
 
             }
-            else if(element == 1)
+            else if(element == 1)//column
             {   
 
             //Tracker II
@@ -779,7 +807,7 @@ int main (void)
             shaderTracker2.Unbind();
             delete[] Tracker2;
             }
-            else if (element == 2)
+            else if (element == 2)//wall
             {
                 //Greda
                 
@@ -799,23 +827,22 @@ int main (void)
                 // shaderTrackerGreda.Unbind();
                 // delete[] TrackerGreda; 
                             
-            //Tracker
-            unsigned int* Tracker = new unsigned int [trackerCount];
+                //Tracker
+                unsigned int* Tracker = new unsigned int [trackerCount];
 
-            B.IndexBufferElement(mouseX, mouseY, Tracker);
-            IndexBuffer ib_Tracker (Tracker, trackerCount);
+                B.IndexBufferElement(mouseX, mouseY, Tracker);
+                IndexBuffer ib_Tracker (Tracker, trackerCount);
 
-            /* Ovo je shader za tracker */
-            shaderTracker.Bind();
-            shaderTracker.SetUniform4f("u_Color",ColorClick, 1.f, 0.5f, 0.5f );
-            shaderTracker.SetUniformMat4f("u_MVP", proj);
-            renderer.Draw(va, ib_Tracker, shaderTracker);  
+                /* Ovo je shader za tracker */
+                shaderTracker.Bind();
+                shaderTracker.SetUniform4f("u_Color",ColorClick, 1.f, 0.5f, 0.5f );
+                shaderTracker.SetUniformMat4f("u_MVP", proj);
+                renderer.Draw(va, ib_Tracker, shaderTracker);  
 
-            shaderTracker.Unbind();
-            delete[] Tracker;       
-            }
-            else if (element == 3)
-            {
+                shaderTracker.Unbind();
+                delete[] Tracker;       
+            }else if (element == 3){/* prozor */
+
             unsigned int* Tracker = new unsigned int [trackerCount];
 
             B.IndexBufferElement(mouseX, mouseY, Tracker);
@@ -829,12 +856,24 @@ int main (void)
 
             shaderTracker.Unbind();
             delete[] Tracker;   
+            }else if (element == 4){/* vrata */
+                //ovo ti je dio koda za tacker
+            unsigned int* Tracker = new unsigned int [trackerCount];
+
+            B.IndexBufferElement(mouseX, mouseY, Tracker);
+            IndexBuffer ib_Tracker (Tracker, trackerCount);
+
+            /* Ovo je shader za tracker */
+            shaderTracker.Bind();
+            shaderTracker.SetUniform4f("u_Color",ColorClick, 1.f, 0.5f, 0.5f );
+            shaderTracker.SetUniformMat4f("u_MVP", proj);
+            renderer.Draw(va, ib_Tracker, shaderTracker);  
+
+            shaderTracker.Unbind();
+            delete[] Tracker;   
+
             }
-
-         //================ USLOV ZA VUCENJE MISA ===============
-            // std::cout<<lbutton_down<<std::endl;
-
-
+  
          //================ PUNJENJE MEMORIJE - ide po prioritetu ===============
 
             /* uslov za izuzetak na desnom i gornjem kraju ekrana */
@@ -844,7 +883,7 @@ int main (void)
                 MouseYpos2 = MouseYpos2 + atr.ScreenHeight / atr.colums;
                }
 
-            //Greda
+            //Greda--> ZID
             if(lbutton_down && element == 2)
             {
             B.IndexBufferGreda(MouseXposGreda,MouseYposGreda, mouseX,mouseY, brojacGreda, MemoryGreda);
@@ -866,11 +905,14 @@ int main (void)
             }
             IndexBuffer ib_MemoryEraser( MemoryEraser, MemoryEraserCount);
 
+            //Vrata
+            B.IndexBufferDoor(MouseXpos, MouseYpos, brojacDoor, MemoryDoor);
+            IndexBuffer ib_MemoryDoor ( MemoryDoor, MemoryDoorCount);
 
 
         //============== ISCRTAVANJE ====================================
 
-            /* Ovo je shader za memoriju grede (jer ona moze preko stuba) */ 
+            /* Ovo je shader za memoriju grede -->zida (jer ona moze preko stuba) */ 
             shaderGreda.Bind();
             shaderGreda.SetUniform4f( "u_Color",ColorClick, 1.f, 1.f, 1.f );
             shaderGreda.SetUniformMat4f( "u_MVP", proj );
@@ -884,6 +926,14 @@ int main (void)
             renderer.Draw(va, ib_Memory, shaderElement); 
             shaderElement.Unbind();
 
+            /*  Ovo je shsder za vrata */
+            shaderDoor.Bind();
+            shaderDoor.SetUniform4f("u_Color",ColorClick, 0.6f, 0.f, 1.f );
+            shaderElement.SetUniformMat4f("u_MVP", proj);
+            renderer.Draw(va, ib_MemoryDoor, shaderDoor); 
+
+
+
              /* Ovo je shader za memoriju 2 - aka stub */
             shaderColumn.Bind();
             shaderColumn.SetUniform4f("u_Color",ColorClick, 0.f, 0.f, 1.f );
@@ -891,7 +941,7 @@ int main (void)
             renderer.Draw(va, ib_Memory2, shaderColumn);  
             shaderColumn.Unbind();
 
-             /* Ovo je shader za Eraser 2 - aka stub */
+             /* Ovo je shader za Eraser 2 - aka gumica */
             shaderEraser.Bind();
             shaderEraser.SetUniform4f("u_Color", 0.f, 1.f, 0.f, 0.f );
             shaderEraser.SetUniformMat4f("u_MVP", proj);
@@ -938,12 +988,17 @@ int main (void)
             ImGui::RadioButton("Element", &element, 0); ImGui::SameLine();
             ImGui::RadioButton("Column", &element, 1); ImGui::SameLine();
             ImGui::RadioButton("Wall", &element, 2);
+            
+        ImGui::Separator();
 
-            // ImGui::RadioButton("Vrata", &element, 3); ImGui::SameLine();
-            // ImGui::RadioButton("Prozor", &element, 4); 
+            ImGui::RadioButton("Window", &element, 3); ImGui::SameLine();
+            ImGui::RadioButton("Door", &element, 4); 
 
-            // ImGui::RadioButton("Stepenice", &element, 5); ImGui::SameLine();
+            ImGui::RadioButton("Elevation", &element, 5); ImGui::SameLine();
             // ImGui::RadioButton("Lift", &element, 6); 
+
+        ImGui::Separator();
+
 
             // ImGui::RadioButton("Kuhinjski Sto", &element, 7); ImGui::SameLine();
             // ImGui::RadioButton("Stolica", &element, 8); ImGui::SameLine();
@@ -962,7 +1017,7 @@ int main (void)
 
         ImGui::Separator();
 
-            // ImGui::RadioButton("Eraser", &element, 3); `
+            // ImGui::RadioButton("Eraser", &element, 3); 
 
          
         /*     {
@@ -977,7 +1032,9 @@ int main (void)
         ImGui::Separator();
                    
             ImGui::Checkbox("Primary Grid", &primarniGrid); ImGui::SameLine();
-            ImGui::Checkbox("Secondary Grid", &sekundarniGrid);
+            ImGui::Checkbox("Secondary Grid", &sekundarniGrid);ImGui::SameLine();
+            ImGui::Checkbox("Construction axis", &constructionAxis);
+
 
 
         ImGui::Separator();
@@ -990,11 +1047,34 @@ int main (void)
             ImGui::SameLine();
             ImGui::Text("Hit me one more time!");
 
+    
+
+
             brojacZid = 0;
             brojacStub = 0;
             brojacGreda = 0;
             brojacEraser = 0;
+            brojacDoor = 0;
             }
+
+            static int save = 0;
+            if(ImGui::Button("Save"))
+            save++;
+            if(save & 1)
+            {
+            ImGui::SameLine();
+            ImGui::Text("Hit me one more time!");
+            }
+
+            static int katalog = 0;
+            if(ImGui::Button("Katalog"))
+            katalog++;
+            if(katalog & 1)
+            {
+            ImGui::SameLine();
+            ImGui::Text("Hit me one more time!");
+            }
+
 
         ImGui::Separator();   
            

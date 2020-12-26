@@ -60,7 +60,7 @@ namespace grid
         unsigned int IndexBufferMemory ( double mouseX,  double mouseY, int brojac, unsigned int* Igraliste );
         unsigned int IndexBufferMemory2 ( double mouseX,  double mouseY, int brojac, unsigned int* Igraliste );
         unsigned int IndexBufferGreda (double mouseXStatic, double mouseYStatic, double mouseXDynamic, double mouseYDynamic, int brojac, unsigned int* Igraliste);
-
+        unsigned int IndexBufferDoor (double mouseX, double mouseY, int brojac, unsigned int* Igraliste);
         //eraser
         unsigned int IndexBufferEraser (double mouseXStatic, double mouseYStatic, double mouseXDynamic, double mouseYDynamic, int brojac, unsigned int* Igraliste);
 

@@ -690,6 +690,38 @@ namespace grid
 
         }
 
+        unsigned int Buffer::IndexBufferDoor (double mouseX, double mouseY, int brojac, unsigned int* Igraliste)
+        {
+              /* dimenzije celije u pixelima */
+            double celijaX = ScreenWidth/rows;      
+            double celijaY = ScreenHeight/colums;
+
+            unsigned int Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
+            unsigned int Iy = (ScreenHeight - mouseY)/celijaY;//treba da zaokruzis ovo na donju
+           
+            //formula za racunanje ugaonog indeksa
+            unsigned int I0= Ix + Iy*(rows+1);//prvi indeks. Donji lijevi
+
+            //OVDJE SAD NE PRAVIS KOMBINACUJU INDEKSA ZA DVA TROUGLA NEGO RENDERUJES LINIJE ZA VRATA -- MODUO 15
+            for(int i = 0; i<1; i++)
+            {
+            Igraliste[i]   = I0;
+            Igraliste[i+1] = I0+1;
+            Igraliste[i+2] = I0+1+rows ;
+            
+
+            /* ovaj dio ces dA obrises */
+            Igraliste[i+3] = I0+1;
+            Igraliste[i+4] = I0+1+rows;
+            Igraliste[i+5] = I0+1+rows + 1;
+            
+       
+            }
+
+            return 0;
+
+        }
+
          unsigned int Buffer::IndexBufferEraser (double mouseXStatic, double mouseYStatic, double mouseXDynamic, double mouseYDynamic, int brojac, unsigned int* Igraliste)
         {
 
