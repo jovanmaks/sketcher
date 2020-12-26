@@ -50,7 +50,7 @@ int SCREEN_HEIGHT = atr.ScreenHeight;
 
 float ColorClick = 1.f;
 
-double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda;
+double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda, msX, msY;
 int brojacRKlik,brojacLKlik, brojacZid, brojacStub, brojacGreda, brojacEraser;
 int trackerCount, trackerGredaCount, roolerCount;
 int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, id_Count;
@@ -86,18 +86,18 @@ typedef struct
 field* hash_id_table[TABLE_SIZE];
 
 
-unsigned int hash_id(double mouseX, double mouseY)//mogao bi ovo prije da izracunas da isto prima id kao parametar da bi mogao da 
+unsigned int hash_id(double msX, double msY)//mogao bi ovo prije da izracunas da isto prima id kao parametar da bi mogao da 
 {    
     unsigned int hash_id_value;
 
     double celijaX = SCREEN_WIDTH/width;      
     double celijaY = SCREEN_HEIGHT/height;
 
-    double  Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
+    double  Ix = msX/celijaX;//treba da zaokruzis ovo na donju
     double res1;
     res1 = floor (Ix);
 
-    double  Iy = (SCREEN_HEIGHT - mouseY)/celijaY;//treba da zaokruzis ovo na donju
+    double  Iy = (SCREEN_HEIGHT - msY)/celijaY;//treba da zaokruzis ovo na donju
     double  res2;
     res2 = floor (Iy);
 
@@ -212,11 +212,9 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
     {
     brojacLKlik +=1;
 
-    field edge = {MouseXpos, MouseYpos, "44", "celik", 1};//trebao bi na klik da ovo radis
+    // glfwGetCursorPos(window, &MouseXpos, &MouseYpos);
 
-    hash_table_id_insert(&edge);
-
-    print_id_table();
+  
 
 
     }
@@ -224,7 +222,7 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
         brojacRKlik+=1;
-
+        lbutton_down = true;
 
 
 
@@ -245,12 +243,12 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
 
         brojacGreda +=1;
         glfwGetCursorPos(window, &MouseXposGreda, &MouseYposGreda);
-        lbutton_down = true;
+        // lbutton_down = true;
 
         }else if ( element ==3){
             brojacEraser +=1;
             glfwGetCursorPos(window, &MouseXposGreda, &MouseYposGreda);
-            lbutton_down = true;
+            // lbutton_down = true;
         }
 
         // std::cout<<brojac<<std::endl;
@@ -260,6 +258,15 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
     else if( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE )
     {
         lbutton_down = false;
+        glfwGetCursorPos(window, &msX, &msY);
+
+        field edge = { msX, msY, "  test", "celik", 1};//trebao bi na klik da ovo radis
+
+        hash_table_id_insert(&edge);
+        print_id_table();
+
+
+
     }       
 
 }
@@ -671,6 +678,7 @@ int main (void)
         GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         renderer.Clear();
         
+        // glfwSetMouseButtonCallback ( window, mouseButtonCallback );
 
        
 
@@ -712,7 +720,9 @@ int main (void)
 
             // B.id(mouseX, mouseY);
 
-            
+            // glfwGetCursorPos(window, &msX, &msY);   
+
+      
 
          
          //================ ODABIR ELEMENTA ZA TRAKER ===============
