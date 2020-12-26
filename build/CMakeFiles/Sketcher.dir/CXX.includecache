@@ -54,6 +54,16 @@ vendor/glm/gtx/intersect.hpp
 
 /home/demijan/Projects/sketcher/src/Atributes.h
 
+/home/demijan/Projects/sketcher/src/Grid.cpp
+Grid.h
+/home/demijan/Projects/sketcher/src/Grid.h
+Atributes.h
+/home/demijan/Projects/sketcher/src/Atributes.h
+cmath
+-
+iostream
+-
+
 /home/demijan/Projects/sketcher/src/Grid.h
 Atributes.h
 /home/demijan/Projects/sketcher/src/Atributes.h

@@ -18,7 +18,7 @@ public:
     float GridValue = 0.5;/* VAZNO */
     float RGB1      = 0.6;/* VAZNO */
     float RGB2      = 0.6;/* VAZNO */
-
+                                                                     
 
 //============== GRID - CELL ==========================
 

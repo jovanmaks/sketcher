@@ -38,6 +38,16 @@
 grid::Buffer B;
 
 
+Atributes atr;
+float width = atr.rows;
+float height = atr.colums;
+
+
+int SCREEN_WIDTH = atr.ScreenWidth;
+int SCREEN_HEIGHT = atr.ScreenHeight;
+
+
+
 float ColorClick = 1.f;
 
 double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda;
@@ -50,6 +60,119 @@ int *sf = &scroolback_flag;
 int element = 0;
 bool lbutton_down;
 
+
+//////////////////////////////////////////////////////////////
+////////////////////// RE-HASHING //////////////////////////////
+//////////////////////////////////////////////////////////////
+#define MAX_NAME 256
+#define TABLE_SIZE 36
+#define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
+#define DELETED_NODE2 (field*)(0xFFFFFFFFFFFFFFFFUL)
+
+
+typedef struct 
+{
+    double msX;
+    double msY;
+
+    char id [ MAX_NAME ];
+    char material [ MAX_NAME ];
+
+    int POS;
+    // float  color;
+    //....add other stuff here
+} field;
+
+field* hash_id_table[TABLE_SIZE];
+
+
+unsigned int hash_id(double mouseX, double mouseY)//mogao bi ovo prije da izracunas da isto prima id kao parametar da bi mogao da 
+{    
+    unsigned int hash_id_value;
+
+    double celijaX = SCREEN_WIDTH/width;      
+    double celijaY = SCREEN_HEIGHT/height;
+
+    double  Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
+    double res1;
+    res1 = floor (Ix);
+
+    double  Iy = (SCREEN_HEIGHT - mouseY)/celijaY;//treba da zaokruzis ovo na donju
+    double  res2;
+    res2 = floor (Iy);
+
+    unsigned int id= res1 + res2*width;//prvi indeks. Donji lijevi
+
+    hash_id_value = id;
+
+    return hash_id_value;
+}
+
+
+void init_hash_id_table() 
+{
+    for (int i=0; i<TABLE_SIZE; i++){
+        hash_id_table[i] = NULL; //postavio si sve pointere na nulu
+    }
+    //table is empty
+}
+
+
+void print_id_table() 
+{
+    std::cout<<"start"<<std::endl;
+    for (int i=0; i< TABLE_SIZE; i++) 
+    {
+      if (hash_id_table[i]==NULL)
+      {
+         std::cout<<i<<"-----"<<std::endl;
+
+      } else if (hash_id_table[i] == DELETED_NODE2){
+          std::cout<<i<<"---<deleted>"<<std::endl;
+      } else {
+          std::cout<<i<<hash_id_table[i]->id<<std::endl;
+      }
+    }
+    std::cout<<"End"<<std::endl;
+
+} 
+
+bool hash_table_id_insert(field *f)
+{
+  if (f == NULL) return false;
+  int index = hash_id( f->msX, f->msY);//ovde moraju ici dva double elementa (pozicije misa) da on izracuna na osnovu toga index
+  if(hash_id_table[index] != NULL)
+  {
+      return false;
+  }
+  hash_id_table[index] = f;
+  return true;
+}
+
+/* //find an element in the table by their name
+column *hash_table_lookup ( char const *id2 )
+{
+    int index = hash(id2);
+    for (int i=0; i< TABLE_SIZE; i++)
+    {
+        int put = (index + i) % TABLE_SIZE;
+        if (hash_table[put] == NULL)
+        {
+            return NULL; //not here`
+        }
+        if(hash_table[put] == DELETED_NODE) return NULL;
+        if (hash_table[put]!=NULL && strncmp (hash_table[index] ->id2, id2, TABLE_SIZE)==0)
+        {
+            return hash_table[put];
+        }
+    }
+    return NULL;
+} */
+
+
+/* insert */
+/* lookup */
+/* delete */
 
 
 
@@ -87,13 +210,24 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        // ColorClick = 1.0f;
-        brojacLKlik +=1;
+    brojacLKlik +=1;
+
+    field edge = {MouseXpos, MouseYpos, "44", "celik", 1};//trebao bi na klik da ovo radis
+
+    hash_table_id_insert(&edge);
+
+    print_id_table();
+
+
     }
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
         brojacRKlik+=1;
+
+
+
+
         if(element == 0)
         {
 
@@ -176,142 +310,115 @@ static void ShowExampleAppMainMenuBar()
 ////////////////////// HASHING //////////////////////////////
 //////////////////////////////////////////////////////////////
 
-#define MAX_NAME 256
-#define TABLE_SIZE 25
-#define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
-
-typedef struct 
-{
-    char id [ MAX_NAME ];
-    // char material [ MAX_NAME ];
-
-    int POS;
-    // float  color;
-    //....add other stuff here
-} column;
 
 
-column* hash_table[TABLE_SIZE];
+// typedef struct 
+// {
+//     char id2 [ MAX_NAME ];
+//     // char material [ MAX_NAME ];
+
+//     int POS2;
+//     // float  color;
+//     //....add other stuff here
+// } column;
 
 
-unsigned int hash( char const *id)
-{
-    int lenght = strnlen (id, MAX_NAME);
-    unsigned int hash_value = 0;
-    for (int i=0; i<lenght; i++)
-    {
-        hash_value +=id[i];
-        hash_value = (hash_value * id[i]) % TABLE_SIZE;
-    }
-    return hash_value;
-}
-
-void init_hash_table() 
-{
-    for (int i=0; i<TABLE_SIZE; i++){
-        hash_table[i] = NULL; //postavio si sve pointere na nulu
-    }
-    //table is empty
-}
+// column* hash_table[TABLE_SIZE];
 
 
-void print_table() 
-{
-    std::cout<<"start"<<std::endl;
-    for (int i=0; i< TABLE_SIZE; i++) 
-    {
-      if (hash_table[i]==NULL)
-      {
-         std::cout<<i<<"-----"<<std::endl;
+// unsigned int hash( char const *id2)
+// {
+//     int lenght = strnlen (id2, MAX_NAME);
+//     unsigned int hash_value = 0;
+//     for (int i=0; i<lenght; i++)
+//     {
+//         hash_value +=id2[i];
+//         hash_value = (hash_value * id2[i]) % TABLE_SIZE;
+//     }
+//     return hash_value;
+// }
 
-      } else if (hash_table[i] == DELETED_NODE){
-          std::cout<<i<<"---<deleted>"<<std::endl;
-      } else {
-          std::cout<<i<<hash_table[i]->id<<std::endl;
-      }
-    }
-    std::cout<<"End"<<std::endl;
 
-} 
 
-bool hash_table_insert(column *c)
-{
-    if (c==NULL) return false;
-    int index = hash (c->id);
-    for (int i=0; i< TABLE_SIZE; i++)
-    {
+// void init_hash_table() 
+// {
+//     for (int i=0; i<TABLE_SIZE; i++){
+//         hash_table[i] = NULL; //postavio si sve pointere na nulu
+//     }
+//     //table is empty
+// }
+
+
+// void print_table() 
+// {
+//     std::cout<<"start"<<std::endl;
+//     for (int i=0; i< TABLE_SIZE; i++) 
+//     {
+//       if (hash_table[i]==NULL)
+//       {
+//          std::cout<<i<<"-----"<<std::endl;
+
+//       } else if (hash_table[i] == DELETED_NODE){
+//           std::cout<<i<<"---<deleted>"<<std::endl;
+//       } else {
+//           std::cout<<i<<hash_table[i]->id2<<std::endl;
+//       }
+//     }
+//     std::cout<<"End"<<std::endl;
+
+// } 
+
+// bool hash_table_insert(column *c)
+// {
+//     if (c==NULL) return false;
+//     int index = hash (c->id2);
+//     for (int i=0; i< TABLE_SIZE; i++)
+//     {
         
-        int put = (i+ index) % TABLE_SIZE;
-        if (hash_table[put] == NULL || hash_table[put] == DELETED_NODE)
-        {
-            hash_table[put] = c;
-            return true;
-        }
-    }
+//         int put = (i+ index) % TABLE_SIZE;
+//         if (hash_table[put] == NULL || hash_table[put] == DELETED_NODE)
+//         {
+//             hash_table[put] = c;
+//             return true;
+//         }
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
 //find an element in the table by their name
-column *hash_table_lookup ( char const *id )
-{
-    int index = hash(id);
-    for (int i=0; i< TABLE_SIZE; i++)
-    {
-        int put = (index + i) % TABLE_SIZE;
-        if (hash_table[put] == NULL)
-        {
-            return NULL; //not here`
-        }
-        if(hash_table[put] == DELETED_NODE) return NULL;
-        if (hash_table[put]!=NULL && strncmp (hash_table[index] ->id, id, TABLE_SIZE)==0)
-        {
-            return hash_table[put];
-        }
-    }
-    return NULL;
-}
+// column *hash_table_lookup ( char const *id2 )
+// {
+//     int index = hash(id2);
+//     for (int i=0; i< TABLE_SIZE; i++)
+//     {
+//         int put = (index + i) % TABLE_SIZE;
+//         if (hash_table[put] == NULL)
+//         {
+//             return NULL; //not here`
+//         }
+//         if(hash_table[put] == DELETED_NODE) return NULL;
+//         if (hash_table[put]!=NULL && strncmp (hash_table[index] ->id2, id2, TABLE_SIZE)==0)
+//         {
+//             return hash_table[put];
+//         }
+//     }
+//     return NULL;
+// }
+
+
+
 
 
 /* Main function */
 int main (void)
 {
-    // init_hash_table();
 
-
-    // column CC = {"CC", 1, };
-    // column BB = {"BB", 2, };
-
-    // hash_table_insert(&CC);
-    // hash_table_insert(&BB);
-
-    // print_table();
-
-
-    // column *tmp = hash_table_lookup("BB");
-
-    // if(tmp == NULL){
-    // printf("Not found!\n");
-    // }else{
-    // printf("Found %s.\n",tmp->id);
-    // }
-
-    // tmp = hash_table_lookup("BB");
-    // if(tmp == NULL){
-    //     printf("Not found!\n");
-    // }else{
-    //     printf("Found %s.\n",tmp->id);
-    // }
-
-
-    Atributes atr;
-    float width = atr.rows;
-    float height = atr.colums;
+    /* Hash */
+    init_hash_id_table();
 
 
 
-    int SCREEN_WIDTH = atr.ScreenWidth;
-    int SCREEN_HEIGHT = atr.ScreenHeight;
 
     int frameBufferWidth = 0;
     int frameBufferHeight = 0;
@@ -892,7 +999,8 @@ int main (void)
 
         ImGui::Separator();   
 
-            ImGui::Text("ID: ");
+            // hash_id(gx,gy);
+            ImGui::Text("ID: (%i)", hash_id(gx,gy));
             ImGui::Text("Value: ");
             ImGui::Text("Type: ");
             ImGui::Text("Material: ");
