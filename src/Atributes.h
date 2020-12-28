@@ -23,8 +23,8 @@ public:
 //============== GRID - CELL ==========================
 
     /* neka uvijek budu parni da bi mogao da postoji sekundarni grid */ //PREKO 50 JE IZBACIVAO SEGFAULT NON STOP
-    unsigned int rows = 50;/* VAZNO */
-    unsigned int colums = 50;/* VAZNO */
+    unsigned int rows = 4;/* VAZNO */
+    unsigned int colums = 4;/* VAZNO */
 
 
 //============== GRID - VERTEX ========================= 

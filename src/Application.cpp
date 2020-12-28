@@ -69,7 +69,7 @@ unsigned int mirror = 1;
 ////////////////////// RE-HASHING //////////////////////////////
 //////////////////////////////////////////////////////////////
 #define MAX_NAME 256
-#define TABLE_SIZE 2500
+#define TABLE_SIZE 16
 #define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
 #define DELETED_NODE2 (field*)(0xFFFFFFFFFFFFFFFFUL)
 
@@ -80,20 +80,28 @@ typedef struct
     double msY;
 
     char id [ MAX_NAME ];
-    char material [ MAX_NAME ];
+    int value;
 
-    int POS;
+    // char material [ MAX_NAME ];`
     // float  color;
     //....add other stuff here
 } field;
 
-
+/* 
 typedef struct
 {
-    char name [MAX_NAME];
-    char obradaPoda [MAX_NAME];//ovdje bi trebao hechove da ubacujes
-    float area;
-}room;
+    // char name [MAX_NAME];
+    // char obradaPoda [MAX_NAME];//ovdje bi trebao hechove da ubacujes
+    // float area;
+}room; */
+
+typedef struct{
+    char id;
+    float value;
+
+} evaluation;
+
+
 
 field* hash_id_table[TABLE_SIZE];
 
@@ -300,10 +308,10 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
         lbutton_down = false;
         glfwGetCursorPos(window, &msX, &msY);
 
-        field edge = { msX, msY, "  test", "celik", 1};//trebao bi na klik da ovo radis
+        field edge = { msX, msY, "  test",  1};//trebao bi na klik da ovo radis
 
         hash_table_id_insert(&edge);
-        // print_id_table();
+        print_id_table();
     }       
 
 }
@@ -697,8 +705,7 @@ int main (void)
 
     bool coloredMatrix = true;
     bool valueMatrix = false;
-
-    bool Table = false;
+    bool informations = false;
 
 
     static bool show_app_main_menu_bar = true;
@@ -1034,7 +1041,9 @@ int main (void)
             ImGui::Checkbox("Construction axis", &constructionAxis);
         ImGui::Separator();
             ImGui::Checkbox("Value matrix",   &valueMatrix); ImGui::SameLine();
-            ImGui::Checkbox("Colored matrix", &coloredMatrix); 
+            ImGui::Checkbox("Colored matrix", &coloredMatrix); ImGui::SameLine();
+            ImGui::Checkbox("Informations", &informations); 
+
 
             
         ImGui::Separator();
@@ -1107,14 +1116,10 @@ int main (void)
             ImGui::Text("Type: ");
             ImGui::Text("Material: ");
             ImGui::Text("POS: "); 
+   
 
-
-        ImGui::Separator();
-        ImGui::Separator();
-        ImGui::Separator();
-
-          ImGui::Text("Ubaci tabelu ovdje: "); 
-
+     
+            
             /*    
              static int hide = 0;
             if(ImGui::Button("hide"))
@@ -1128,6 +1133,44 @@ int main (void)
 
             ImGui::End();
   
+        }
+
+`        if(informations)
+        {
+        ImGui::Begin("Tables", &informations);
+          if (ImGui::TreeNode("Tables"))
+          {
+              // NB: Future columns API should allow automatic horizontal borders.
+              static bool h_borders = true;
+              static bool v_borders = true;
+              static int columns_count = 4;
+              const int lines_count = 4;
+              ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4);
+              ImGui::DragInt("##columns_count", &columns_count, 0.1f, 2, 10, "%d columns");
+              if (columns_count < 2)
+                  columns_count = 2;
+         
+              ImGui::Columns(columns_count, NULL, v_borders);
+              for (int i = 0; i < columns_count * lines_count; i++)
+              {
+                  if (h_borders && ImGui::GetColumnIndex() == 0)
+                      ImGui::Separator();
+                  ImGui::Text("%c%c%c", 'a' + i, 'a' + i, 'a' + i);
+                  ImGui::Text("Width %.2f", ImGui::GetColumnWidth());
+                  ImGui::Text("Avail %.2f", ImGui::GetContentRegionAvail().x);
+                  ImGui::Text("Offset %.2f", ImGui::GetColumnOffset());
+                  ImGui::Text("Long text");
+                  ImGui::Button("Button", ImVec2(-FLT_MIN, 0.0f));
+                  ImGui::NextColumn();
+              }
+              ImGui::Columns(1);
+              if (h_borders)
+                  ImGui::Separator();
+              ImGui::TreePop();
+          }
+
+        ImGui::End();
+
         }
 
     
