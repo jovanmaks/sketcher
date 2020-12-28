@@ -690,36 +690,92 @@ namespace grid
 
         }
 
-        unsigned int Buffer::IndexBufferDoor (double mouseX, double mouseY, int brojac, unsigned int* Igraliste)
+        unsigned int Buffer::IndexBufferDoor (double mouseX, double mouseY, int brojac, unsigned int side, unsigned int mirror, unsigned int* Igraliste)
         {
-              /* dimenzije celije u pixelima */
             double celijaX = ScreenWidth/rows;      
             double celijaY = ScreenHeight/colums;
 
-            unsigned int Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
-            unsigned int Iy = (ScreenHeight - mouseY)/celijaY;//treba da zaokruzis ovo na donju
-           
+            double  Ix = mouseX/celijaX;//treba da zaokruzis ovo na donju
+            double res1;
+            res1 = floor( Ix);
+
+            double  Iy = (ScreenHeight - mouseY)/celijaY;//treba da zaokruzis ovo na donju
+            double  res2;
+            res2 = floor(Iy);
             //formula za racunanje ugaonog indeksa
-            unsigned int I0= Ix + Iy*(rows+1);//prvi indeks. Donji lijevi
+            unsigned int I0= res1 + res2*(rows+1);//prvi indeks. Donji lijevi
+            unsigned int I1=I0 +6;
+            unsigned int I2=I0 +6 + rows*6;
+            unsigned int I3= I2 +6;
 
-            //OVDJE SAD NE PRAVIS KOMBINACUJU INDEKSA ZA DVA TROUGLA NEGO RENDERUJES LINIJE ZA VRATA -- MODUO 15
-            for(int i = 0; i<1; i++)
-            {
-            Igraliste[i]   = I0;
-            Igraliste[i+1] = I0+1;
-            Igraliste[i+2] = I0+1+rows ;
+            unsigned int I4= I0 - 6;
+            unsigned int I5=I0-rows*6 -6 ;
+            unsigned int I6= I5-6 ;
+
+            unsigned int I7= I5+6;
+
+
             
 
-            /* ovaj dio ces dA obrises */
-            Igraliste[i+3] = I0+1;
-            Igraliste[i+4] = I0+1+rows;
-            Igraliste[i+5] = I0+1+rows + 1;
+
+            if(side == 1 && mirror==1){
+
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I1;
+            Igraliste[brojac*3 -1]= I2;
+
+            }else if(side == 1 && mirror==2){
+
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I1;
+            Igraliste[brojac*3 -1]= I3;
+
+
+            }else if(side == 2 && mirror==1){
+                
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I5;
+            Igraliste[brojac*3 -1]= I4;
+
+            }else if(side == 2 && mirror==2){
+
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I5;
+            Igraliste[brojac*3 -1]= I6;
+
+            }else if(side == 3 && mirror==1){
+
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I1;
+            Igraliste[brojac*3 -1]= I5;
+
+            }else if(side == 3 && mirror==2){
+
+            Igraliste[brojac*3 -3]= I0;
+            Igraliste[brojac*3 -2]= I1;
+            Igraliste[brojac*3 -1]= I7;
+
+            }else if(side == 4 && mirror==1){
+
+            // Igraliste[brojac*3 -3]= I0;
+            // Igraliste[brojac*3 -2]= I1;
+            // Igraliste[brojac*3 -1]= I3;
+
+            }else if(side == 4 && mirror==2){
             
-       
+            // Igraliste[brojac*3 -3]= I0;
+            // Igraliste[brojac*3 -2]= I1;
+            // Igraliste[brojac*3 -1]= I3;
+
             }
+            
+            /* Valgrind izgleda ovo izbacuje kao invalid write */
 
-            return 0;
+            
+            
 
+         
+         return 0;
         }
 
          unsigned int Buffer::IndexBufferEraser (double mouseXStatic, double mouseYStatic, double mouseXDynamic, double mouseYDynamic, int brojac, unsigned int* Igraliste)
