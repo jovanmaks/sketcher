@@ -36,9 +36,9 @@
 
 /* Sketcher */
 grid::Buffer B;
-
-
 Atributes atr;
+
+
 float width = atr.rows;
 float height = atr.colums;
 
@@ -69,7 +69,7 @@ unsigned int mirror = 1;
 ////////////////////// RE-HASHING //////////////////////////////
 //////////////////////////////////////////////////////////////
 #define MAX_NAME 256
-#define TABLE_SIZE 36
+#define TABLE_SIZE 2500
 #define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
 #define DELETED_NODE2 (field*)(0xFFFFFFFFFFFFFFFFUL)
 
@@ -560,11 +560,11 @@ int main (void)
    
     
 
-    unsigned int* Memory = new unsigned int [ 100+memoryCount ];//stub
-    unsigned int* Memory2 = new unsigned int [ 100 + memoryCount2 ];//prozor
-    unsigned int* MemoryGreda = new unsigned int [ 100+MemoryGredaCount];//greda-zid
-    unsigned int* MemoryDoor = new unsigned int [MemoryDoorCount];//vrata
-    unsigned int* MemoryEraser = new unsigned int [100 + MemoryEraserCount];//gumica
+    unsigned int* Memory = new unsigned int       [ 1000 + memoryCount ];//stub
+    unsigned int* Memory2 = new unsigned int      [ 1000 + memoryCount2 ];//prozor
+    unsigned int* MemoryGreda = new unsigned int  [ 1000 + MemoryGredaCount];//greda-zid
+    unsigned int* MemoryDoor = new unsigned int   [ 1000 + MemoryDoorCount];//vrata
+    unsigned int* MemoryEraser = new unsigned int [ 1000 + MemoryEraserCount];//gumica
 
    
 
@@ -984,15 +984,18 @@ int main (void)
             ImGui::RadioButton("Column", &element, 1); ImGui::SameLine();
             ImGui::RadioButton("Wall", &element, 2);
             
-        ImGui::Separator();
 
             ImGui::RadioButton("Window", &element, 3); ImGui::SameLine();
-            ImGui::RadioButton("Door", &element, 4); 
-
+            ImGui::RadioButton("Door", &element, 4); ImGui::SameLine();
             ImGui::RadioButton("Elevation", &element, 5); ImGui::SameLine();
             // ImGui::RadioButton("Lift", &element, 6); 
+            // ImGui::RadioButton("Stepenice", &element, 6); 
 
+
+            ImGui::RadioButton("Delete", &element, 6); ImGui::SameLine();
         ImGui::Separator();
+        ImGui::Separator();
+
 
 
             // ImGui::RadioButton("Kuhinjski Sto", &element, 7); ImGui::SameLine();
@@ -1036,6 +1039,8 @@ int main (void)
             
         ImGui::Separator();
         ImGui::Separator();
+        ImGui::Separator();
+
 
             static int clicked = 0;
             if(ImGui::Button("Reset"))
@@ -1045,15 +1050,14 @@ int main (void)
             ImGui::SameLine();
             ImGui::Text("Hit me one more time!");
 
-    
-
-
-            brojacZid = 0;
+             brojacZid = 0;
             brojacStub = 0;
             brojacGreda = 0;
             brojacEraser = 0;
             brojacDoor = 0;
             }
+
+
 
             static int save = 0;
             if(ImGui::Button("Save"))
@@ -1063,6 +1067,7 @@ int main (void)
             ImGui::SameLine();
             ImGui::Text("Hit me one more time!");
             }
+
 
             static int katalog = 0;
             if(ImGui::Button("Katalog"))
@@ -1075,6 +1080,10 @@ int main (void)
 
 
         ImGui::Separator();   
+        ImGui::Separator();
+        ImGui::Separator();
+
+
            
             double gx;
             double gy;
@@ -1089,6 +1098,8 @@ int main (void)
 
 
         ImGui::Separator();   
+        ImGui::Separator();
+        ImGui::Separator();
 
             // hash_id(gx,gy);
             ImGui::Text("ID: (%i)", hash_id(gx,gy));
@@ -1100,6 +1111,8 @@ int main (void)
 
         ImGui::Separator();
         ImGui::Separator();
+        ImGui::Separator();
+
           ImGui::Text("Ubaci tabelu ovdje: "); 
 
             /*    
