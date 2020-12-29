@@ -58,7 +58,7 @@ float ColorClick = 1.f;
 double MouseXpos, MouseYpos, MouseXpos2, MouseYpos2, MouseXposGreda, MouseYposGreda, msX, msY, MouseXposDoor, MouseYposDoor;
 int brojacRKlik,brojacLKlik, brojacZid, brojacStub, brojacGreda, brojacEraser, brojacDoor;
 int trackerCount, trackerGredaCount, roolerCount;
-int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, MemoryDoorCount;
+int memoryCount, memoryCount2, MemoryGredaCount, MemoryEraserCount, MemoryDoorCount, MemoryValueCount;
 
 float VALUE_COUNT;
 
@@ -68,7 +68,7 @@ int element ;
 bool lbutton_down;
 
 unsigned int tt;
-
+unsigned int nn;
 
 unsigned int side = 1;
 unsigned int mirror = 1;
@@ -317,19 +317,19 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
 
         ColorClick = 1.0f;
          
-            glfwGetCursorPos(window, &msX, &msY);
-            tt = hash_id(msX,msY);
-            std::cout<<"hash id:  " <<tt<<std::endl;     
-            std::cout<<VrijednosniNiz[tt]<<std::endl;     
-            VrijednosniNiz[tt]+=  VALUE_COUNT;//VALUE COUNT MI JE KUMULATIVAN
-            std::cout<<VrijednosniNiz[tt]<<std::endl;     
-            std::cout<<"end "<<std::endl;  
+        glfwGetCursorPos(window, &msX, &msY);
+        tt = hash_id(msX,msY);
+        // std::cout<<"hash id:  " <<tt<<std::endl;     
+        // std::cout<<VrijednosniNiz[tt]<<std::endl;     
+        VrijednosniNiz[tt]+=  VALUE_COUNT;//VALUE COUNT MI JE KUMULATIVAN
+        // std::cout<<VrijednosniNiz[tt]<<std::endl;     
+        // std::cout<<"end "<<std::endl;  
       
 
-    //    for (int i=0; i<rowsCount*columsCount; i++)
-    //     {            
-    //         std::cout<<VrijednosniNiz[i]<<std::endl;     
-    //     }
+       for (int i=0; i<rowsCount*columsCount; i++)
+        {            
+            std::cout<<VrijednosniNiz[i]<<std::endl;     
+        }
   
         
     }
@@ -635,6 +635,8 @@ int main (void)
     unsigned int* MemoryDoor = new unsigned int   [ 1000 + MemoryDoorCount];//vrata
     unsigned int* MemoryEraser = new unsigned int [ 1000 + MemoryEraserCount];//gumica
 
+    unsigned int* MemoryValue = new unsigned int [ 1000 + MemoryValueCount];//gumica
+
    
     
      
@@ -722,6 +724,10 @@ int main (void)
     shaderDoor.Bind();
 
 
+    /* Shader for value matrix */
+    Shader shaderValue ( "../res/shaders/Basic2.shader");
+    shaderValue.Bind();
+
     //=============== UNBIND =========================
 
     va.Unbind();
@@ -738,6 +744,7 @@ int main (void)
     shaderGreda.Unbind();
     shaderEraser.Unbind();
     shaderDoor.Unbind();
+    shaderValue.Unbind();
 
     shaderTracker.Unbind();
     shaderTracker2.Unbind();
@@ -821,7 +828,7 @@ int main (void)
             MemoryGredaCount = brojacGreda*6;
             MemoryEraserCount = brojacEraser*6;
             MemoryDoorCount = brojacDoor*3;
-            
+            MemoryValueCount= brojacZid*6;
 
          //=========================================================
          //================ ODABIR ELEMENTA ZA TRAKER ===============
@@ -971,7 +978,14 @@ int main (void)
             IndexBuffer ib_MemoryEraser( MemoryEraser, MemoryEraserCount);
 
 
-        //============== ISCRTAVANJE ====================================
+            //value matrica
+            B.IndexBufferMemory (MouseXpos,MouseYpos, brojacZid, MemoryValue);   
+            IndexBuffer ib_MemoryValue(MemoryValue, MemoryValueCount);
+            //============== ISCRTAVANJE ====================================
+
+
+            if(coloredMatrix)
+            {
 
             /* Ovo je shader za memoriju grede -->zida (jer ona moze preko stuba) */ 
             shaderGreda.Bind();
@@ -994,8 +1008,6 @@ int main (void)
             renderer.Draw(va, ib_MemoryDoor, shaderDoor); 
             shaderDoor.Unbind();
 
-
-
              /* Ovo je shader za memoriju 2 - aka stub */
             shaderColumn.Bind();
             shaderColumn.SetUniform4f("u_Color",ColorClick, 0.f, 0.f, 1.f );
@@ -1010,11 +1022,28 @@ int main (void)
             renderer.Draw(va, ib_MemoryEraser, shaderEraser); 
             shaderEraser.Unbind();
 
+            }
 
-            //============================================
-            /* ovdje ce ti doci vrata jer 
-            vrata mogu preko zida ali ne mogu preko stuba */
-            //============================================
+            // std::cout<<"Vadis:  " <<VrijednosniNiz[tt]<<std::endl;     
+
+            if(valueMatrix)
+            {
+            //    glfwGetCursorPos(window, &mouseX, &mouseY);  
+              nn = hash_id(mouseX,mouseY);
+            
+            //treba ti lookup funkcija da vadis vrijednosni niz ili  jednostavno da opet trazis sa hash fjom
+            // nn = //vrijednost na poziciji misa
+               
+                shaderValue.Bind();
+                shaderValue.SetUniform4f( "u_Color",VrijednosniNiz[tt], 0.f, 0.f, 0.f );
+                shaderValue.SetUniformMat4f("u_MVP", proj);
+                renderer.Draw(va, ib_MemoryValue, shaderValue); 
+                shaderValue.Unbind();
+
+                
+
+            }
+
 
         }
 
