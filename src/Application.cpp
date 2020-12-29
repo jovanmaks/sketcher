@@ -38,9 +38,15 @@
 grid::Buffer B;
 Atributes atr;
 
+//   unsigned int* Memory = new unsigned int       [ 1000 + memoryCount ];//stub
 
 float width = atr.rows;
 float height = atr.colums;
+
+int rowsCount = atr.rows;
+int columsCount = atr.colums;
+
+float*  VrijednosniNiz = new float [rowsCount*columsCount];
 
 
 int SCREEN_WIDTH = atr.ScreenWidth;
@@ -61,6 +67,8 @@ int *sf = &scroolback_flag;
 int element ;
 bool lbutton_down;
 
+unsigned int tt;
+
 
 unsigned int side = 1;
 unsigned int mirror = 1;
@@ -73,20 +81,6 @@ unsigned int mirror = 1;
 #define DELETED_NODE (column*)(0xFFFFFFFFFFFFFFFFUL)
 #define DELETED_NODE2 (field*)(0xFFFFFFFFFFFFFFFFUL)
 
-
-typedef struct 
-{
-    double msX;
-    double msY;
-
-    char id [ MAX_NAME ];
-    int value;
-
-    // char material [ MAX_NAME ];`
-    // float  color;
-    //....add other stuff here
-} field;
-
 /* 
 typedef struct
 {
@@ -95,11 +89,25 @@ typedef struct
     // float area;
 }room; */
 
-typedef struct{
-    char id;
+typedef struct 
+{
+    double msX;
+    double msY;
+
+    // unsigned int id ;
     float value;
 
-} evaluation;
+    // char material [ MAX_NAME ];`
+    // float  color;
+    //....add other stuff here
+} field;
+
+
+/* typedef struct{
+    unsigned int id;
+    float value;
+
+} evaluation; */
 
 
 
@@ -139,6 +147,19 @@ void init_hash_id_table()
     //table is empty
 }
 
+bool hash_table_id_insert(field *f)
+{
+  if (f == NULL) return false;
+  int index = hash_id( f->msX, f->msY);//ovde moraju ici dva double elementa (pozicije misa) da on izracuna na osnovu toga index
+  if(hash_id_table[index] != NULL)
+  {
+      return false;
+  }
+  hash_id_table[index] = f;
+  return true;
+}
+
+
 
 void print_id_table() 
 {
@@ -152,24 +173,13 @@ void print_id_table()
       } else if (hash_id_table[i] == DELETED_NODE2){
           std::cout<<i<<"---<deleted>"<<std::endl;
       } else {
-          std::cout<<i<<hash_id_table[i]->id<<std::endl;
+          std::cout<<i<<"   "<</* hash_id_table[i]->id<< "    " << */hash_id_table[i]->value <<std::endl;
       }
     }
     std::cout<<"End"<<std::endl;
 
 } 
 
-bool hash_table_id_insert(field *f)
-{
-  if (f == NULL) return false;
-  int index = hash_id( f->msX, f->msY);//ovde moraju ici dva double elementa (pozicije misa) da on izracuna na osnovu toga index
-  if(hash_id_table[index] != NULL)
-  {
-      return false;
-  }
-  hash_id_table[index] = f;
-  return true;
-}
 
 /* //find an element in the table by their name
 column *hash_table_lookup ( char const *id2 )
@@ -259,48 +269,69 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
 
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
     {
-        brojacRKlik+=1;
         lbutton_down = true;
 
+        brojacRKlik+=1;
+
+        //ispisuje sa zakasnjenjem
+          
+         
 
 
-        if(element == 0){//element
+        if(element == 0){//elementclea
             
-        VALUE_COUNT +=0.25f;
+        VALUE_COUNT =0.25f;
+
 
         brojacZid += 1;
         glfwGetCursorPos(window, &MouseXpos, &MouseYpos);
     
         }else if(element == 1){//stub
             
-        VALUE_COUNT +=1.f;
+        VALUE_COUNT =1.f;
 
         brojacStub += 1;
         glfwGetCursorPos(window, &MouseXpos2, &MouseYpos2);
 
         }else if( element ==2 ){//zid
 
-        VALUE_COUNT +=0.75f;
+        VALUE_COUNT =0.75f;
         brojacGreda +=1;
         glfwGetCursorPos(window, &MouseXposGreda, &MouseYposGreda);
 
         }else if ( element ==3){//gumica
 
-            VALUE_COUNT -=1.f;            
+            VALUE_COUNT =-1.f;            
 
             brojacEraser +=1;
             glfwGetCursorPos(window, &MouseXposGreda, &MouseYposGreda);
 
         }else if (element == 4){//vrata
 
-            VALUE_COUNT -=0.5f;
+            VALUE_COUNT =-0.5f;
 
             brojacDoor +=1;
             glfwGetCursorPos(window, &MouseXposDoor, &MouseYposDoor);
 
         }
-        
+
         ColorClick = 1.0f;
+         
+            glfwGetCursorPos(window, &msX, &msY);
+            tt = hash_id(msX,msY);
+            std::cout<<"hash id:  " <<tt<<std::endl;     
+            std::cout<<VrijednosniNiz[tt]<<std::endl;     
+            VrijednosniNiz[tt]+=  VALUE_COUNT;//VALUE COUNT MI JE KUMULATIVAN
+            std::cout<<VrijednosniNiz[tt]<<std::endl;     
+            std::cout<<"end "<<std::endl;  
+      
+
+    //    for (int i=0; i<rowsCount*columsCount; i++)
+    //     {            
+    //         std::cout<<VrijednosniNiz[i]<<std::endl;     
+    //     }
+  
+        
     }
 
     else if( button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE )
@@ -308,10 +339,39 @@ void mouseButtonCallback ( GLFWwindow *window, int button, int action, int mods)
         lbutton_down = false;
         glfwGetCursorPos(window, &msX, &msY);
 
-        field edge = { msX, msY, "  test",  1};//trebao bi na klik da ovo radis
 
-        hash_table_id_insert(&edge);
-        print_id_table();
+        //problem je sto na svaki novi klik izracuna nove id i upise ih oba
+    
+
+
+            //lookup ce da trazi indeks. Ako uspijes da razdvojis value bice dovoljno
+        
+
+
+        // if(brojacRKlik == 1)
+        // {
+
+       // field info2 = {msX, msY, /*tt ako mu dodas neki promjenjivi sufiks mozda ga preskoci */  VALUE_COUNT };
+       // hash_table_id_insert(&info2);
+
+        // }else if(brojacRKlik == 2) {
+
+        // field info = {msX, msY, /*tt ako mu dodas neki promjenjivi sufiks mozda ga preskoci */  1};
+        // hash_table_id_insert(&info);//unosi samo gornju jer detektuje DA je polje zauzeto
+
+        // }
+
+
+
+        
+
+        // print_id_table();//ovo mora ovdje
+
+        // field edge = { msX, msY, 666 ,  VALUE_COUNT };//trebao bi na klik da ovo radis
+
+        // hash_table_id_insert(&edge);
+
+    
     }       
 
 }
@@ -467,6 +527,7 @@ int main (void)
     /* Hash */
     init_hash_id_table();
 
+        
 
     int frameBufferWidth = 0;
     int frameBufferHeight = 0;
@@ -575,6 +636,8 @@ int main (void)
     unsigned int* MemoryEraser = new unsigned int [ 1000 + MemoryEraserCount];//gumica
 
    
+    
+     
 
 
     //=============== LAYOUT =========================
@@ -694,9 +757,9 @@ int main (void)
     ImGui::StyleColorsDark();
 
 
-    //flags for trigerring imGui 
+    // flags for trigerring imGui 
     bool show_another_window = true;
-    bool show_demo_window = true;
+    bool show_demo_window = true;   
 
     bool primarniGrid   = true;
     bool sekundarniGrid = false;
@@ -709,9 +772,6 @@ int main (void)
 
 
     static bool show_app_main_menu_bar = true;
-
-
-
 
 
     //====================================================
@@ -1094,8 +1154,8 @@ int main (void)
 
 
            
-            double gx;
-            double gy;
+            static double gx;
+            static double gy;
             glfwGetCursorPos(window, &gx, &gy);   
             ImGui::Text("Mouse pos: (%g, %g)", gx, gy);
             ImGui::Text("Scroolback flag: (%i) ", *sf);
@@ -1135,16 +1195,21 @@ int main (void)
   
         }
 
-`        if(informations)
+        if(informations)
         {
         ImGui::Begin("Tables", &informations);
+
+        static double gx;
+        static double gy;
+        glfwGetCursorPos(window, &gx, &gy);   
+
           if (ImGui::TreeNode("Tables"))
           {
               // NB: Future columns API should allow automatic horizontal borders.
               static bool h_borders = true;
               static bool v_borders = true;
-              static int columns_count = 4;
-              const int lines_count = 4;
+              static int columns_count = width;
+              const int lines_count = height;
               ImGui::SetNextItemWidth(ImGui::GetFontSize() * 4);
               ImGui::DragInt("##columns_count", &columns_count, 0.1f, 2, 10, "%d columns");
               if (columns_count < 2)
@@ -1156,11 +1221,16 @@ int main (void)
                   if (h_borders && ImGui::GetColumnIndex() == 0)
                       ImGui::Separator();
                   ImGui::Text("%c%c%c", 'a' + i, 'a' + i, 'a' + i);
-                  ImGui::Text("Width %.2f", ImGui::GetColumnWidth());
-                  ImGui::Text("Avail %.2f", ImGui::GetContentRegionAvail().x);
-                  ImGui::Text("Offset %.2f", ImGui::GetColumnOffset());
-                  ImGui::Text("Long text");
-                  ImGui::Button("Button", ImVec2(-FLT_MIN, 0.0f));
+                //   ImGui::Text("Width %.2f", ImGui::GetColumnWidth());
+                //   ImGui::Text("Avail %.2f", ImGui::GetContentRegionAvail().x);
+                //   ImGui::Text("Offset %.2f", ImGui::GetColumnOffset());
+
+                // hash_id_table[i]->id   
+                // hash_id_table[i]->value 
+
+                  ImGui::Text("Value:  ");   
+                  ImGui::Text("ID: (%i)", hash_id(gx,gy)); //vjerovatno ces morati nesto skontati sa onom gore for petljom 
+                //   ImGui::Button("Button", ImVec2(-FLT_MIN, 0.0f));
                   ImGui::NextColumn();
               }
               ImGui::Columns(1);
